@@ -1,0 +1,60 @@
+### Install Apache and start service -- Ansible ###
+- name: Install and Start Apache
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install apache
+      yum: 
+       name: httpd
+       state: present
+
+
+    - name: Start apache
+      service: 
+         name: httpd
+         stae: started
+         enabled: yes
+
+
+##Ec2 instance -- Teraform##
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "PathnexEC2" {
+  ami =   "ami-0abcd1234abcd1234"
+  instance_type = "t3.medium"
+  tags = {
+    Name = "Pathnex-T3"
+   }
+}
+
+## Create a ReplicaSet with 3 Replicas -- Kubernets ##
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: pathnex-replicaset
+Spec: 
+  replicas: 3
+  selector: 
+     matchLabels:
+       app: pathnex-app
+   template:
+     metadata:
+       labels:
+         app: pathnex-app
+     spec:
+       containers:
+        - name: app
+          image: nginx
+          ports: 
+            -containerPort: 80
+
+##Shell Script - user info
+#!/bin/bash
+echo "Current  user: $(whoami)"
+echo "Current user groups: $(groups)"
+
+
+
+
