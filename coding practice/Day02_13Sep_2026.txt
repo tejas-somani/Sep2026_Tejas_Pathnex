@@ -1,0 +1,30 @@
+- name: Install and start Nginx on Pathnex
+ hosts: all
+ become: yes
+ 
+ tasks: 
+  - name: Install nginx
+    yum:
+     name: nginx
+     state: present
+
+  - name: Enable nginx
+    service:
+      name: nginx
+      sate: started
+      enables: yes
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "PathnexEC2" {
+   ami = "ami-0abcd1234abcd1234"
+   instance_type= "r5.2large"
+
+  tags = {
+    Name = "Pathnex-serve"
+    Enviroment = "Training"
+    Owner = "PathnexStudent"
+    }
+}
